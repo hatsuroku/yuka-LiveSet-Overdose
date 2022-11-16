@@ -1,0 +1,21 @@
+html, body {
+    height: 100%;
+}
+
+#app {
+    font-family: 'nunito_for_arco', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+    color: #2c3e50;
+    height: 100%;
+}
+
+.flex_center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+a:link, a:hover, a:visited, a:active {
+    color: #2c3e50;
+    text-decoration: none;
+}
