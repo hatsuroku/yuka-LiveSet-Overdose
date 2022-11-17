@@ -26,7 +26,7 @@ export default {
 </script>
 
 <style scoped>
-.update-button {
-  margin-left: 10px;
+.tips > p {
+  margin: 1px 0 0 0;
 }
 </style>
