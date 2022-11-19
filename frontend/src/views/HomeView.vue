@@ -1,13 +1,12 @@
 <template>
   <div class="home">
     <a-layout-header>
-      <TitleBar @tabChanged="switchTab"/>
+      <TitleBar @tabChanged="switchTab" />
     </a-layout-header>
     <a-layout-content class="container">
       <template v-if="activeTab === '1'">
-        <div>
-          <BulletinSetting class="bulletin-setting" />
-        </div>
+        <BulletinSetting class="bulletin-setting" />
+        <PlayControl class="play-control" />
       </template>
       <template v-if="activeTab === '2'">歌单管理</template>
       <template v-if="activeTab === '3'">设置</template>
@@ -19,26 +18,27 @@
 </template>
 
 <script>
-import TitleBar from "@/components/HomeView/TitleBar.vue";
-import FooterBar from "@/components/HomeView/FooterBar.vue";
-import BulletinSetting from "@/components/HomeView/BulletinSetting.vue";
+import TitleBar from '@/components/HomeView/TitleBar.vue'
+import FooterBar from '@/components/HomeView/FooterBar.vue'
+import BulletinSetting from '@/components/HomeView/BulletinSetting.vue'
+import PlayControl from '@/components/HomeView/PlayControl.vue'
 export default {
-  name: "HomeView",
-  components: {BulletinSetting, TitleBar, FooterBar },
+  name: 'HomeView',
+  components: { PlayControl, BulletinSetting, TitleBar, FooterBar },
   data() {
     return {
-      activeTab: "1",
-    };
+      activeTab: '1',
+    }
   },
 
   mounted() {},
 
   methods: {
     switchTab(e) {
-      this.activeTab = e;
+      this.activeTab = e
     },
   },
-};
+}
 </script>
 
 <style scoped>
@@ -50,14 +50,27 @@ export default {
 }
 
 .container {
-  padding: 14px 20px;
+  margin: 14px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .bulletin-setting {
   width: 100%;
+  min-width: 350px;
+  max-width: 640px;
 }
 
-@media screen {
-
+.play-control {
+  width: 100%;
+  min-width: 350px;
+  max-width: 640px;
 }
+
+/*@media screen and (min-width:680px){*/
+/*  .bulletin-setting {*/
+/*    width: 640px;*/
+/*  }*/
+/*}*/
 </style>

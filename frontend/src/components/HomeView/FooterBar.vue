@@ -9,15 +9,15 @@
 
 <script>
 export default {
-  name: "FooterBar",
+  name: 'FooterBar',
   components: {},
-};
+}
 </script>
 
 <style scoped>
 .footer-bar {
   margin: 1rem 0;
-  color: #9AAEC7;
+  color: #9aaec7;
   text-align: center;
 }
 </style>
