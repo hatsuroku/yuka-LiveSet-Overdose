@@ -11,6 +11,16 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log('a user connected')
+  socket.on('pd_ModuleReady', (msg) => {
+    console.log(msg);
+  });
+  socket.emit('pd_Message', {
+    bulletinSettingText: "ceshi"
+  })
+})
+
+io.on('close', () => {
+  console.log('a user disconnect')
 })
 
 server.listen(3000, () => {

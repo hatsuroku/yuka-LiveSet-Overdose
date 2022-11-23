@@ -1,13 +1,24 @@
-import { createApp } from "vue";
-import ArcoVue from "@arco-design/web-vue";
-import App from "./App.vue";
-import router from "./router";
-import "@arco-design/web-vue/dist/arco.css";
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+import VueSocketIO from 'vue-3-socket.io'
+import io from 'socket.io-client'
+import ArcoVue from '@arco-design/web-vue'
+import '@arco-design/web-vue/dist/arco.css'
 
-import "./assets/main.css";
+import './assets/main.css'
 
-const app = createApp(App);
+const socketIO = new VueSocketIO({
+  debug: true,
+  connection: io(`${location.hostname}:3000`, {
+    transports: ['websocket'],
+  }),
+  extraHeaders: { 'Access-Control-Allow-Origin': '*' },
+})
 
-app.use(router).use(ArcoVue);
+const app = createApp(App)
+app.use(router)
+app.use(ArcoVue)
+app.use(socketIO)
 
-app.mount("#app");
+app.mount('#app')

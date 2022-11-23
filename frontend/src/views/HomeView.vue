@@ -22,6 +22,7 @@ import TitleBar from '@/components/HomeView/TitleBar.vue'
 import FooterBar from '@/components/HomeView/FooterBar.vue'
 import BulletinSetting from '@/components/HomeView/BulletinSetting.vue'
 import PlayControl from '@/components/HomeView/PlayControl.vue'
+
 export default {
   name: 'HomeView',
   components: { PlayControl, BulletinSetting, TitleBar, FooterBar },
@@ -31,11 +32,23 @@ export default {
     }
   },
 
-  mounted() {},
+  mounted() {
+    // this.creatSocket()
+  },
 
   methods: {
     switchTab(e) {
       this.activeTab = e
+    },
+
+    creatSocket() {
+      this.socket.subscribe('msg', (data) => {
+        console.log(data)
+      })
+
+      this.socket.on('open', () => {
+        console.log('success')
+      })
     },
   },
 }

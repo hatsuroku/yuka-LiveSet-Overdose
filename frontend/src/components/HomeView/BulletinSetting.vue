@@ -6,10 +6,10 @@
       :show-back="false"
     >
       <template #extra>
-        <a-button type="primary">更新</a-button>
+        <a-button type="primary" :disabled="!connected">更新</a-button>
       </template>
     </a-page-header>
-    <a-textarea placeholder="Please enter something" allow-clear auto-size />
+    <a-textarea placeholder="正在连接后端服务...请稍候" allow-clear auto-size :disabled="!connected" :model-value="text" />
     <div class="tips">
       <p>Tips: 可使用 JavaScript 模板语法构建插值。</p>
       <p>支持的模板有: ${歌单}、${待播曲目计数}</p>
@@ -21,6 +21,28 @@
 export default {
   name: 'BulletinSetting',
   components: {},
+  data() {
+    return {
+      connected: false,
+      text: ''
+    }
+  },
+
+  mounted() {
+    this.$socket.emit('pd_ModuleReady', {
+      name: this.$options.name
+    })
+
+    this.sockets.subscribe('pd_Message', (data) => {
+      if (data) {
+        this.connected = true
+        this.text = data.bulletinSettingText
+      }
+    })
+  },
+
+  methods: {
+  },
 }
 </script>
 

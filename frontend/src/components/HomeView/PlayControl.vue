@@ -36,7 +36,11 @@ export default {
     }
   },
 
-  mounted() {},
+  mounted() {
+    this.$socket.emit('pd_ModuleReady', {
+      name: this.$options.name
+    })
+  },
 
   methods: {
     playButtonHandler() {
