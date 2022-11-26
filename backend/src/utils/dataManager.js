@@ -24,14 +24,11 @@ function setConfig(data) {
     saveJSON('config', data)
 }
 
-const fileList = []
-let fileListUpdate = false
+// const fileList = []
+// let fileListUpdate = false
 
 function getFileList() {
-    if (fileListUpdate) { return fileList }
-    fileList = readJSON('fileList')
-    fileListUpdate = true
-    return fileList
+
 }
 
 function uploadFile() {
