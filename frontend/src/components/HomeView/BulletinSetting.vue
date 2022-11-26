@@ -9,7 +9,13 @@
         <a-button type="primary" :disabled="!connected">更新</a-button>
       </template>
     </a-page-header>
-    <a-textarea placeholder="正在连接后端服务...请稍候" allow-clear auto-size :disabled="!connected" :model-value="text" />
+    <a-textarea
+      placeholder="正在连接后端服务...请稍候"
+      allow-clear
+      auto-size
+      :disabled="!connected"
+      :model-value="text"
+    />
     <div class="tips">
       <p>Tips: 可使用 JavaScript 模板语法构建插值。</p>
       <p>支持的模板有: ${歌单}、${待播曲目计数}</p>
@@ -18,19 +24,25 @@
 </template>
 
 <script>
+import common from '@/common'
+
 export default {
   name: 'BulletinSetting',
   components: {},
   data() {
     return {
+      uuid: '',
       connected: false,
-      text: ''
+      text: '',
     }
   },
 
   mounted() {
+    this.uuid = common.genUUID()
+
     this.$socket.emit('pd_ModuleReady', {
-      name: this.$options.name
+      name: this.$options.name,
+      uuid: this.uuid,
     })
 
     this.sockets.subscribe('pd_Message', (data) => {
@@ -41,8 +53,7 @@ export default {
     })
   },
 
-  methods: {
-  },
+  methods: {},
 }
 </script>
 
