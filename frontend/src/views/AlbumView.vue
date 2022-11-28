@@ -1,5 +1,36 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, Ref } from 'vue'
+import { ref, reactive, onMounted, Ref, StyleValue } from 'vue'
+import { getRandomInt } from '../utils/randomUtils'
+// import imgPicker from '../utils/imgPicker'
+
+class ImgPicker {
+    imgUrlList: string[] = [];
+
+    constructor() {
+        for (let i = 1; i <= 17; ++i) {
+            this.imgUrlList.push(`/img/${i}.jpg`)
+        }
+    }
+
+    get(): string {
+        const idx = getRandomInt(this.imgUrlList.length)
+        const ret = this.imgUrlList[idx]
+        // never empty
+        if (this.imgUrlList.length > 1) {
+            this.imgUrlList.splice(idx, 1)
+        }
+        return ret
+    }
+
+    add(imgUrl: string) {
+        if (imgUrl.startsWith('url')) {
+            imgUrl = imgUrl.slice(4, -1)
+        }
+        this.imgUrlList.push(imgUrl)
+    }
+}
+
+const imgPicker = new ImgPicker()
 
 type Direction = 'top' | 'bottom' | 'left' | 'right'
 const classObj: Ref<string[][]> = ref([
@@ -7,17 +38,24 @@ const classObj: Ref<string[][]> = ref([
     reactive([]),
 ])
 
-let using = 1
+const styleObj: Ref<StyleValue[]> = ref([
+    reactive({}),
+    reactive({}),
+])
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
+let using = 1
 
 function switchAlbum(newAlbumUrl, fromDirection: Direction) {
     let nowClass, nextClass
+    let nowStyle, nextStyle
     nowClass = classObj.value[using]
+    nowStyle = styleObj.value[using]
     using = (using + 1) % classObj.value.length
     nextClass = classObj.value[using]
+    nextStyle = styleObj.value[using]
+
+    nextStyle.backgroundImage = `url(${newAlbumUrl})`
+    imgPicker.add(nowStyle.backgroundImage)
     
     // clear array
     nowClass.splice(0, nowClass.length)
@@ -32,44 +70,46 @@ function switchAlbum(newAlbumUrl, fromDirection: Direction) {
         nextClass[1] = 'current-album'
         nextClass.push('album-transition')
     }, 0);
-
 }
 
+
 onMounted(() => {
+    styleObj.value[using].backgroundImage = `url(${imgPicker.get()})`
     const dir: Direction[] = ['top', 'bottom', 'left', 'right']
     setInterval(() => {
-        switchAlbum(0, dir[getRandomInt(dir.length)])
-    }, 2000)
+        switchAlbum(imgPicker.get(), dir[getRandomInt(dir.length)])
+    }, 5000)
 })
+
 </script>
 
 <template>
     <div class="outer-container">
-        <div class="album" :class="classObj[0]" style="background-image: url('http://127.0.0.1:8080/miku.jpg');"></div>
-        <div class="album" :class="classObj[1]" style="background-image: url('http://127.0.0.1:8080/talk.webp')"></div>
+        <div class="album" :class="classObj[0]" :style="styleObj[0]"></div>
+        <div class="album" :class="classObj[1]" :style="styleObj[1]"></div>
     </div>
 </template>
 
 <style scoped>
 .outer-container {
-    margin: 100px;
-    height: 600px;
-    width: 600px;
+    /* margin: 100px; */
+    height: 100%;
+    width: 100%;
     overflow: hidden;
     position: relative;
 }
 
 .album {
     position: absolute;
+    height: 100%;
+    width: 100%;
     background: blanchedalmond;
-    height: 600px;
-    width: 600px;
     background-size: cover;
     background-position: center;
 }
 
 .album-transition {
-    transition: left 1s, top 1s;
+    transition: left 3s, top 3s;
     transition-timing-function: cubic-bezier(.48, 0, 0, 1.01);
 }
 
@@ -80,24 +120,24 @@ onMounted(() => {
 
 .top-album {
     left: 0;
-    top: -600px;
+    top: calc(-100%);
     background: lightblue;
 }
 
 .right-album {
-    left: 600px;
+    left: calc(100%);
     top: 0;
     background: pink;
 }
 
 .bottom-album {
     left: 0;
-    top: 600px;
+    top: calc(100%);
     background: lightyellow;
 }
 
 .left-album {
-    left: -600px;
+    left: calc(-100%);
     top: 0;
     background: lightcoral;
 }
