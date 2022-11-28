@@ -1,36 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, Ref, StyleValue } from 'vue'
-import { getRandomInt } from '../utils/randomUtils'
-// import imgPicker from '../utils/imgPicker'
-
-class ImgPicker {
-    imgUrlList: string[] = [];
-
-    constructor() {
-        for (let i = 1; i <= 17; ++i) {
-            this.imgUrlList.push(`/img/${i}.jpg`)
-        }
-    }
-
-    get(): string {
-        const idx = getRandomInt(this.imgUrlList.length)
-        const ret = this.imgUrlList[idx]
-        // never empty
-        if (this.imgUrlList.length > 1) {
-            this.imgUrlList.splice(idx, 1)
-        }
-        return ret
-    }
-
-    add(imgUrl: string) {
-        if (imgUrl.startsWith('url')) {
-            imgUrl = imgUrl.slice(4, -1)
-        }
-        this.imgUrlList.push(imgUrl)
-    }
-}
-
-const imgPicker = new ImgPicker()
+import { getRandomIntRange, getRandomElement } from '../utils/randomUtils'
+import { imgPicker, preloadImgs } from '../utils/imgUtils'
 
 type Direction = 'top' | 'bottom' | 'left' | 'right'
 const classObj: Ref<string[][]> = ref([
@@ -42,6 +13,12 @@ const styleObj: Ref<StyleValue[]> = ref([
     reactive({}),
     reactive({}),
 ])
+
+const switchTime = {
+    lo: 5,
+    hi: 60,
+}
+const dir: Direction[] = ['top', 'bottom', 'left', 'right']
 
 let using = 1
 
@@ -69,16 +46,18 @@ function switchAlbum(newAlbumUrl, fromDirection: Direction) {
     setTimeout(() => {
         nextClass[1] = 'current-album'
         nextClass.push('album-transition')
-    }, 0);
+    }, 0)
+    setTimeout(() => {
+        switchAlbum(imgPicker.get(), getRandomElement(dir))
+    }, getRandomIntRange(switchTime.lo, switchTime.hi) * 1000)
 }
 
-
+preloadImgs(imgPicker.getImgUrlList())
 onMounted(() => {
     styleObj.value[using].backgroundImage = `url(${imgPicker.get()})`
-    const dir: Direction[] = ['top', 'bottom', 'left', 'right']
-    setInterval(() => {
-        switchAlbum(imgPicker.get(), dir[getRandomInt(dir.length)])
-    }, 5000)
+    setTimeout(() => {
+        switchAlbum(imgPicker.get(), getRandomElement(dir))
+    }, getRandomIntRange(switchTime.lo, switchTime.hi) * 1000)
 })
 
 </script>
@@ -103,13 +82,12 @@ onMounted(() => {
     position: absolute;
     height: 100%;
     width: 100%;
-    background: blanchedalmond;
     background-size: cover;
     background-position: center;
 }
 
 .album-transition {
-    transition: left 3s, top 3s;
+    transition: left 1s, top 1s;
     transition-timing-function: cubic-bezier(.48, 0, 0, 1.01);
 }
 
@@ -121,25 +99,21 @@ onMounted(() => {
 .top-album {
     left: 0;
     top: calc(-100%);
-    background: lightblue;
 }
 
 .right-album {
     left: calc(100%);
     top: 0;
-    background: pink;
 }
 
 .bottom-album {
     left: 0;
     top: calc(100%);
-    background: lightyellow;
 }
 
 .left-album {
     left: calc(-100%);
     top: 0;
-    background: lightcoral;
 }
 
 .upper {

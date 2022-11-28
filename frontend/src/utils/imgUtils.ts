@@ -19,6 +19,10 @@ class ImgPicker {
         return ret
     }
 
+    getImgUrlList(): string[] {
+        return this.imgUrlList.map(x => x)
+    }
+
     add(imgUrl: string) {
         if (imgUrl.startsWith('url')) {
             imgUrl = imgUrl.slice(4, -1)
@@ -27,6 +31,12 @@ class ImgPicker {
     }
 }
 
-const imgPicker = new ImgPicker()
 
-export default imgPicker
+export const imgPicker = new ImgPicker()
+
+export function preloadImgs(imgUrlList) {  
+    for (let i = 0; i < imgUrlList.length; i++) {
+        const img = new Image()
+        img.src = imgUrlList[i]
+    }
+}
