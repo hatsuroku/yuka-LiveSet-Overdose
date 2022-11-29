@@ -2,10 +2,8 @@
   "name": "project-dove",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
-    "tsdev": "vue-tsc --noEmit --skipLibCheck && vite",
-    "build": "vite build",
-    "tsbuild": "vue-tsc --noEmit --skipLibCheck && vite build",
+    "dev": "vue-tsc --noEmit --skipLibCheck && vite",
+    "build": "vue-tsc --noEmit --skipLibCheck && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix",
     "mylint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs"

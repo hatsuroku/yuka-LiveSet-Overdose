@@ -1,15 +1,15 @@
-const path = require('path')
-const fs = require('fs')
-const random = require('./randomUtils')
+import path from 'path'
+import fs from 'fs'
+import * as random from './randomUtils'
 
 const imgPath = path.resolve(__dirname, '..', '..', 'static', 'img')
 
 class ImgPicker {
     allImgList = new Set()
-    restImgList = []
+    restImgList: string[] = []
 
     constructor() {
-        this.restImgList = fs.readdirSync(imgPath).filter(e => !e.startsWith('.'))
+        this.restImgList = fs.readdirSync(imgPath).filter((e: string) => !e.startsWith('.'))
         for (let filename of this.restImgList) {
             this.allImgList.add(filename)
         }
@@ -29,7 +29,7 @@ class ImgPicker {
         return this.restImgList.map(x => x)
     }
 
-    add(imgUrl) {
+    add(imgUrl: string) {
         if (!this.allImgList.has(imgUrl)) {
             return false
         }
@@ -41,5 +41,4 @@ class ImgPicker {
 }
 
 const picker = new ImgPicker()
-
-module.exports = picker
+export default picker

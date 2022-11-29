@@ -1,12 +1,12 @@
-const express = require('express')
+import express from 'express'
 const app = express()
-const cors = require('cors')
-const http = require('http')
+import cors from 'cors'
+import http from 'http'
 const server = http.createServer(app)
-const { Server } = require("socket.io")
+import { Server } from "socket.io"
 const io = new Server(server)
-const dm = require('./src/utils/dataManager')
-const pickImg = require('./src/routes/pickImg')
+import dm from '@/utils/dataManager'
+import * as pickImg from '@/routes/pickImg'
 
 const corsOptions = {
   origin: [
