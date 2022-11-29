@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, Ref, StyleValue } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, Ref, StyleValue } from 'vue'
 import { getRandomIntRange, getRandomElement } from '../utils/randomUtils'
-import { imgPicker, preloadImgs } from '../utils/imgUtils'
 import { baseUrl, getFilenameFromUrl } from '../utils/netUtils'
 
 type Direction = 'top' | 'bottom' | 'left' | 'right'
@@ -16,18 +15,20 @@ const styleObj: Ref<StyleValue[]> = ref([
 ])
 
 const switchTime = {
-    // lo: 2,
-    // hi: 2,
-    lo: 5,
-    hi: 60,
+    lo: 1.5,
+    hi: 3,
+    // lo: 5,
+    // hi: 60,
 }
 const dir: Direction[] = ['top', 'bottom', 'left', 'right']
 
 let using = 1
 
+const removeUrlParenthesis = (str: string) => str.slice(4, -1)
+
 function switchAlbum(newAlbum, fromDirection: Direction) {
 
-    const removeUrlParenthesis = (str: string) => str.slice(4, -1)
+    
 
     let nowClass, nextClass
     let nowStyle, nextStyle
@@ -45,20 +46,15 @@ function switchAlbum(newAlbum, fromDirection: Direction) {
     nextClass.splice(0, nextClass.length)
     
     nowClass.push('lower')
-    nowClass.push('current-album')
-
-    nextClass.push('upper')
+    
     nextClass.push(`${fromDirection}-album`)
-    setTimeout(() => {
-        nextClass[1] = 'current-album'
-        nextClass.push('album-transition')
-    }, 0)
+    nextClass.push('upper')
+
     setTimeout(async () => {
         switchAlbum(await fetchImgUrl(), getRandomElement(dir))
     }, getRandomIntRange(switchTime.lo, switchTime.hi) * 1000)
 
     postImgUrl(getFilenameFromUrl(removeUrlParenthesis(nowStyle['background-image'])))
-    
 }
 
 async function fetchImgUrl() {
@@ -80,17 +76,28 @@ async function postImgUrl(imgFilename: string) {
     fetch(`${baseUrl}/collectImg`, {
         method: 'POST',
         mode: 'cors',
-        body
+        body,
+        keepalive: true
     })
+}
+
+function postImgBeforeClose(event) {
+    postImgUrl(getFilenameFromUrl(removeUrlParenthesis(styleObj.value[using]['background-image'])))
 }
 
 // preloadImgs(imgPicker.getImgUrlList())
 onMounted(async () => {
+    window.addEventListener('unload', postImgBeforeClose)
     styleObj.value[using]['background-image'] = `url(${await fetchImgUrl()})`
     setTimeout(async () => {
         switchAlbum(await fetchImgUrl(), getRandomElement(dir))
     }, getRandomIntRange(switchTime.lo, switchTime.hi) * 1000)
 })
+onUnmounted(() => {
+    window.addEventListener('unload', postImgBeforeClose)
+})
+
+
 
 </script>
 
@@ -101,7 +108,7 @@ onMounted(async () => {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .outer-container {
     /* margin: 100px; */
     height: 100%;
@@ -118,35 +125,26 @@ onMounted(async () => {
     background-position: center;
 }
 
-.album-transition {
-    transition: left 1s, top 1s;
-    transition-timing-function: cubic-bezier(.48, 0, 0, 1.01);
+@mixin come-from-dir-with-animation($dir, $top, $left) {
+    @keyframes from-#{$dir} {
+        0% {
+            top: $top;
+            left: $left;
+        }
+        100% {
+            top: 0;
+            left: 0;
+        }
+    }
+    .#{$dir}-album {
+        animation: 1s cubic-bezier(.48, 0, 0, 1.01) from-#{$dir};
+    }
 }
 
-.current-album {
-    left: 0;
-    top: 0;
-}
-
-.top-album {
-    left: 0;
-    top: calc(-100%);
-}
-
-.right-album {
-    left: calc(100%);
-    top: 0;
-}
-
-.bottom-album {
-    left: 0;
-    top: calc(100%);
-}
-
-.left-album {
-    left: calc(-100%);
-    top: 0;
-}
+@include come-from-dir-with-animation(top, calc(-100%), 0);
+@include come-from-dir-with-animation(right, 0, calc(100%));
+@include come-from-dir-with-animation(bottom, calc(100%), 0);
+@include come-from-dir-with-animation(left, 0, calc(-100%));
 
 .upper {
     z-index: 1000;
