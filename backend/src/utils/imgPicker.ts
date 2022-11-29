@@ -1,17 +1,16 @@
 import path from 'path'
 import fs from 'fs'
-import * as random from './randomUtils'
-
-const imgPath = path.resolve(__dirname, '..', '..', 'static', 'img')
+import * as random from './randomUtil'
+import { imgPath } from './constants'
 
 class ImgPicker {
-    allImgList = new Set()
+    allImg = new Set()
     restImgList: string[] = []
 
     constructor() {
         this.restImgList = fs.readdirSync(imgPath).filter((e: string) => !e.startsWith('.'))
         for (let filename of this.restImgList) {
-            this.allImgList.add(filename)
+            this.allImg.add(filename)
         }
     }
 
@@ -25,18 +24,19 @@ class ImgPicker {
         return ret
     }
 
-    getImgUrlList() {
-        return this.restImgList.map(x => x)
-    }
-
-    add(imgUrl: string) {
-        if (!this.allImgList.has(imgUrl)) {
+    add(imgFilename: string) {
+        if (!this.allImg.has(imgFilename)) {
             return false
         }
-        if (this.restImgList.findIndex(e => e === imgUrl) === -1) {
-            this.restImgList.push(imgUrl)
+        if (this.restImgList.findIndex(e => e === imgFilename) === -1) {
+            this.restImgList.push(imgFilename)
         }
         return true
+    }
+
+    addNewImg(imgFilename: string) {
+        this.allImg.add(imgFilename)
+        this.restImgList.push(imgFilename)
     }
 }
 

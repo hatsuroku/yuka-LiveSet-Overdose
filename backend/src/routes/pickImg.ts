@@ -1,16 +1,14 @@
 import path from 'path'
 import fs from 'fs'
-import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { RequestHandler } from 'express'
 import imgPicker from '@/utils/imgPicker'
+import { c } from '@/utils/logUtil'
+import { imgServerPath } from '@/utils/constants'
 
-
-const imgPath = '/img'
-
-const c = console.log.bind(globalThis)
 
 export const pick: RequestHandler = (req, res, next) => {
     const filename = imgPicker.get()
-    res.send(`${imgPath}/${filename}`)
+    res.send(`${imgServerPath}/${filename}`)
     console.log(`img Picked: ${filename}`)
 }
 

@@ -7,6 +7,8 @@ import { Server } from "socket.io"
 const io = new Server(server)
 import dm from '@/utils/dataManager'
 import * as pickImg from '@/routes/pickImg'
+import { uploadImgInfo, uploadImg } from '@/routes/uploadImg'
+import { staticPath } from '@/utils/constants'
 
 const corsOptions = {
   origin: [
@@ -17,7 +19,7 @@ const corsOptions = {
   // allowedHeaders: ['Content-Type', 'Authorization'],
 }
 
-app.use(express.static('static'))
+app.use(express.static(staticPath))
 app.use(cors(corsOptions));
 
 app.use(cors())
@@ -31,17 +33,22 @@ app.get('/', (req, res) => {
 app.get('/pickImg', pickImg.pick)
 app.post('/collectImg', pickImg.collect)
 
-io.on('connection', (socket) => {
-  console.log('a user connected')
-  
-  socket.on('pd_ModuleReady', (msg) => {
-    console.log(msg)
-  });
+app.post('/uploadImgInfo', uploadImgInfo)
+app.post('/uploadImg', uploadImg)
 
-  socket.emit('pd_Message', {
-    bulletinSettingText: "ceshi"
-  })
-})
+
+
+// io.on('connection', (socket) => {
+//   console.log('a user connected')
+  
+//   socket.on('pd_ModuleReady', (msg) => {
+//     console.log(msg)
+//   });
+
+//   socket.emit('pd_Message', {
+//     bulletinSettingText: "ceshi"
+//   })
+// })
 
 server.listen(3000, () => {
   console.log('listening on *:3000')
