@@ -9,7 +9,7 @@ import { imgServerPath } from '@/utils/constants'
 export const pick: RequestHandler = (req, res, next) => {
     const filename = imgPicker.get()
     res.send(`${imgServerPath}/${filename}`)
-    console.log(`img Picked: ${filename}`)
+    console.log(`[pickImg] img Picked: ${filename}`)
 }
 
 export const collect: RequestHandler = (req, res) => {
@@ -19,7 +19,7 @@ export const collect: RequestHandler = (req, res) => {
             || !imgPicker.add(imgFilename)) {
         res.status(400).send(`filename invalid: [${imgFilename}]\n`)
     } else {
-        c(`collected: [${imgFilename}]`)
+        c(`[pickImg] collected: [${imgFilename}]`)
         res.send('ok\n')
     }
 }

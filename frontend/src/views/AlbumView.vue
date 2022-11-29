@@ -64,7 +64,7 @@ async function fetchImgUrl() {
     });
     if (res.ok) {
         const path = await res.text()
-        console.log(`${baseUrl}${path}`);
+        console.log(`[fetchImgUrl]: fetched [${baseUrl}${path}]`);
         return `${baseUrl}${path}`;
     }
     return undefined;
