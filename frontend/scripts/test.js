@@ -1,18 +1,43 @@
-// return [0 .. max)
-function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
+function debounce(func, time) {
+    let timeoutID;
+    return function() {
+        if (timeoutID) {
+            clearInterval(timeoutID);
+        }
+        timeoutID = setTimeout(func, time, ...arguments);
+    }
 }
 
-// return [lo .. hi]
-function getRandomIntRange(lo, hi) {
-    return lo + getRandomInt(hi - lo + 1);
+function throttle(func, time) {
+    let cooling = false;
+    return function() {
+        if (cooling) return;
+        func(...arguments);
+        cooling = true;
+        setTimeout(() => {
+            cooling = false;
+        }, time);
+    }
 }
 
-let cnt = Array(61).fill(0)
+// const do1 = debounce((ah) => console.log(ah), 1000);
+// setTimeout(() => {
+//     do1('one');
+//     console.log('first');
+//     setTimeout(() => {
+//         console.log('second');
+//         do1('two');
+//     }, 500);
+// }, 0);
 
-for (let i = 0; i < 100; ++i) {
-    ++cnt[getRandomIntRange(5, 60)]
+const th2 = throttle((ah) => console.log(ah), 1000);
+
+let i = 0;
+function pei() {
+    console.log(i);
+    th2(`${i++} message`);
+    setTimeout(pei, 500);
 }
 
-console.log(cnt.slice(5))
-console.log(cnt.reduce((acc, now) => acc + now))
+// pei();
+console.log(pei.toString());

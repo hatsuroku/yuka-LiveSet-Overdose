@@ -1,84 +1,81 @@
 <template>
-  <div class="home">
-    <a-layout-header>
-      <TitleBar @tabChanged="switchTab" />
+    <a-layout-header class="header">
+        <h1>Yuka Liveset Control Panel</h1>
     </a-layout-header>
-    <a-layout-content class="container">
-      <template v-if="activeTab === '1'">
-        <BulletinSetting class="bulletin-setting" />
-        <PlayControl class="play-control" />
-      </template>
-      <template v-if="activeTab === '2'">歌单管理</template>
-      <template v-if="activeTab === '3'">设置</template>
+    <a-layout-content class="content">
+        <bulletin class="comp"></bulletin>
+        <upload-img class="comp"></upload-img>
     </a-layout-content>
     <a-layout-footer class="flex_center">
-      <FooterBar />
+        <FooterBar />
     </a-layout-footer>
-  </div>
 </template>
 
-<script>
-import TitleBar from '@/components/HomeView/TitleBar.vue'
+<script setup>
 import FooterBar from '@/components/HomeView/FooterBar.vue'
-import BulletinSetting from '@/components/HomeView/BulletinSetting.vue'
-import PlayControl from '@/components/HomeView/PlayControl.vue'
+import UploadImg from '@/components/HomeView/UploadImg.vue'
+import Bulletin from '@/components/HomeView/BulletinEditor.vue';
+import { ref } from 'vue'
 
-export default {
-  name: 'HomeView',
-  components: { PlayControl, BulletinSetting, TitleBar, FooterBar },
-  data() {
-    return {
-      activeTab: '1',
-    }
-  },
 
-  mounted() {
-    // this.creatSocket()
-  },
-
-  methods: {
-    switchTab(e) {
-      this.activeTab = e
-    },
-
-    creatSocket() {
-      this.socket.subscribe('msg', (data) => {
+function creatSocket() {
+    this.socket.subscribe('msg', (data) => {
         console.log(data)
-      })
+    })
 
-      this.socket.on('open', () => {
+    this.socket.on('open', () => {
         console.log('success')
-      })
-    },
-  },
+    })
 }
 </script>
 
-<style scoped>
-.home {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+<style lang="less" scoped>
+.header {
+    height: 100px;
+    padding: 0 0 0 20px;
+    background: rgb(var(--primary-6));
+    color: white;
+    font-weight: bolder;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    & > h1 {
+        font-size: 2.5rem;
+    }
+}
+
+.content {
+    padding: 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    & > :not(:last-child) {
+        margin-right: 50px;
+    }
+}
+
+.comp {
+    width: 650px;
+    min-width: 320px;
 }
 
 .container {
-  margin: 14px 20px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+    margin: 14px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .bulletin-setting {
-  width: 100%;
-  min-width: 350px;
-  max-width: 640px;
+    width: 100%;
+    min-width: 350px;
+    max-width: 640px;
 }
 
 .play-control {
-  width: 100%;
-  min-width: 350px;
-  max-width: 640px;
+    width: 100%;
+    min-width: 350px;
+    max-width: 640px;
 }
 
 /*@media screen and (min-width:680px){*/

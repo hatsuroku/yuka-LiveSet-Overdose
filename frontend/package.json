@@ -9,6 +9,9 @@
     "mylint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs"
   },
   "dependencies": {
+    "@arco-themes/vue-yuka-liveset": "^0.0.2",
+    "@types/lodash": "^4.14.191",
+    "lodash": "^4.17.21",
     "socket.io-client": "^4.5.4",
     "vue": "^3.2.41",
     "vue-3-socket.io": "^1.0.5",
@@ -23,6 +26,7 @@
     "@vue/eslint-config-prettier": "^7.0.0",
     "eslint": "^8.22.0",
     "eslint-plugin-vue": "^9.3.0",
+    "less": "^4.1.3",
     "prettier": "^2.7.1",
     "sass": "^1.56.1",
     "typescript": "^4.9.3",

@@ -8,6 +8,7 @@
       <a-menu-item key="1">主页</a-menu-item>
       <a-menu-item key="2">歌单管理</a-menu-item>
       <a-menu-item key="3">设置</a-menu-item>
+      <a-menu-item key="4">上传专辑封面</a-menu-item>
     </a-menu>
   </div>
 </template>
