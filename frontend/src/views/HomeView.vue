@@ -12,21 +12,9 @@
 </template>
 
 <script setup>
-import FooterBar from '@/components/HomeView/FooterBar.vue'
-import UploadImg from '@/components/HomeView/UploadImg.vue'
+import FooterBar from '@/components/HomeView/FooterBar.vue';
+import UploadImg from '@/components/HomeView/UploadImg.vue';
 import Bulletin from '@/components/HomeView/BulletinEditor.vue';
-import { ref } from 'vue'
-
-
-function creatSocket() {
-    this.socket.subscribe('msg', (data) => {
-        console.log(data)
-    })
-
-    this.socket.on('open', () => {
-        console.log('success')
-    })
-}
 </script>
 
 <style lang="less" scoped>
@@ -65,22 +53,4 @@ function creatSocket() {
     flex-wrap: wrap;
     justify-content: center;
 }
-
-.bulletin-setting {
-    width: 100%;
-    min-width: 350px;
-    max-width: 640px;
-}
-
-.play-control {
-    width: 100%;
-    min-width: 350px;
-    max-width: 640px;
-}
-
-/*@media screen and (min-width:680px){*/
-/*  .bulletin-setting {*/
-/*    width: 640px;*/
-/*  }*/
-/*}*/
 </style>

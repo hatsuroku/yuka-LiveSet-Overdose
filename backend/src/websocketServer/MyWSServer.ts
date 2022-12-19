@@ -6,6 +6,7 @@ import bulletinAddListener from './handlers/bulletinHandler';
 import bulletinEditorAddListener from './handlers/bulletinEditorHandler';
 
 export default class MyWSServer extends WebSocketServer  {
+    [x: string]: any;
     constructor(server: httpServer | httpsServer) {
         super({ server });
         this.init();
@@ -26,7 +27,7 @@ export default class MyWSServer extends WebSocketServer  {
             writable: false,
             value: [
                 'bulletin',
-                'bulletinEditor',
+                'bulletin-editor',
             ]
         })
     }
@@ -39,12 +40,12 @@ export default class MyWSServer extends WebSocketServer  {
         const clientUrl = new URL(req.url, `http://${req.headers.host}`);
         c(clientUrl);
 
-        if (!clientUrl.searchParams.has('wstype')) {
-            e('[MyWSServer connectionHandler] wstype of req is invalid!');
+        const wstype = clientUrl.searchParams.get('wstype');
+        if (!wstype || this.VALID_WSTYPE.indexOf(wstype) === -1) {
+            e(`[MyWSServer connectionHandler] wstype is [${wstype}], invalid!`);
             return;
         }
 
-        c(clientUrl.searchParams.get('wstype'));
         switch (clientUrl.searchParams.get('wstype')) {
             case 'bulletin': {
                 this.bulletins.add(ws);
@@ -57,18 +58,14 @@ export default class MyWSServer extends WebSocketServer  {
                 break;
             }
         }
-        
-        // ws.on('message', (data) => {
-        //     c('received: %s', data);
-        //     c(`client's number: ${this.clients.size}`);
-        // });
-        // ws.on('close', (data) => {
-        //     c('a client closed. : %s', data);
-        //     c(`client's number: ${this.clients.size}`);
-        // })
-        
-      
-        // ws.send('hello from server');
+        console.log(`current conn: ${this.clients.size }`);
+        console.log(`current total size: ${this.bulletinEditors.size + this.bulletins.size}`);
+
+        ws.on('close', (code, reason) => {
+            console.log(`[${ws.url}] disconnected.`);
+            console.log(`current conn: ${this.clients.size }`);
+            console.log(`current total size: ${this.bulletinEditors.size + this.bulletins.size}`);    
+        })
     }
 
 

@@ -1,8 +1,7 @@
 <template>
     <div class="bulletin-container">
         <div class="bulletin-text">
-            <template v-for="t in getParagraphs" :key="t">
-                <!-- {{t}}<br /> -->
+            <template v-for="(t, index) in getParagraphs" :key="index">
                 <w-marquee>{{t}}&nbsp;</w-marquee>
             </template>
         </div>
@@ -13,21 +12,38 @@
     </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import WMarquee from '@/components/widgets/WMarquee.vue';
 
-const props = defineProps<{
-    text: string
-}>();
-const txt = ref('歌单！\n今天是长濑有花专场！\n\n' +
-                '以心電信\n- ORANGE RANGE\n\n' +
-                '你妈的吃屎\n- 傻逼浏览器用什么内核也不好好写出来全绿的特性你他妈居然不支持你还好意思做浏览器吗真的建议你赶紧倒闭算了\n\n' +
-                '若者のすべて\n- フジファブリック\n\n' +
-                'みずいろのきみ\n- 長瀬有花');
-const getParagraphs = computed(() => txt.value.split('\n'))
+const txt = ref('');
 
-// console.log(props);
-// console.log(txt);
+const getParagraphs = computed(() => txt.value.split('\n'));
+
+let ws: WebSocket;
+
+let i = 3;
+
+onMounted(() => {
+    ws = new WebSocket('ws://localhost:3000?wstype=bulletin');
+    ws.addEventListener('message', (event) => {
+        // 这傻逼 Unity 内置浏览器似乎不支持 Promise 和 async/await，操了
+        // 没法用 await event.data.text()，只能想办法换点别的解决方法了
+        console.log(`received ${JSON.stringify(event, null, 4)}`);
+        let reader = new FileReader();
+        reader.onload = (event) => {
+            //读取之后进行操作的代码区域，event.currentTarget.result 指读取到的内容
+            console.log(reader.result);
+            txt.value = reader.result as string;
+        }
+        reader.readAsText(event.data);
+        // txt.value = `${i++}`;
+        // ws.send(txt.value);
+    })
+})
+
+onUnmounted(() => {
+    ws.close();
+})
 </script>
 
 
