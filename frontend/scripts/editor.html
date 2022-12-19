@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            html, body {
+                margin: 0;
+            }
+            html {
+                height: 100%;
+            }
+            body {
+                min-height: 100%;
+            }
+            #app {
+                margin: 50px 100px;
+                height: 100px;
+                width: 100px;
+                background-color: lightyellow;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+            
+            .text.scroll {
+                display: inline-block;
+                animation: 5s wordsLoop linear infinite;
+            }
+
+            @keyframes wordsLoop {
+                0% {
+                    transform: translateX(100%);
+                }
+                100% {
+                    transform: translateX(-100%);
+                }
+            }
+
+            #ip {
+                height: 100px;
+                width: 700px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <div class="text scroll">
+                啊你是一个一个一个傻逼
+            </div>
+        </div>
+        
+        <div>
+            <form id="form">
+                <textarea id="story" name="story"
+                        rows="5" cols="33"></textarea>
+                <input type="button" onclick="go()" value="go"></input>
+            </form>
+        </div>
+    </body>
+    <script>
+
+        const form = document.getElementById('form');
+        form.onsubmit = function (e) {
+            e.preventDefault();
+            return false;
+        }
+
+        const ws = new WebSocket('ws://localhost:3000?wstype=bulletin-editor');
+        ws.addEventListener('open', (event) => {
+            ws.send('hello i\'m client');
+        });
+        ws.addEventListener('message', (event) => {
+            console.log(`received ${JSON.stringify(event, null, 4)}`);
+            ws.send(`client received ${event.data}`);
+            console.log(`get ${event.data}`);
+        });
+
+        const story = document.getElementById('story');
+
+        function go() {
+            console.log(story.value);
+            ws.send(story.value);
+        }
+    </script>
+</html>

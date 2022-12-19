@@ -1,6 +1,7 @@
 {
   "name": "project-dove",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vue-tsc --noEmit --skipLibCheck && vite",
     "build": "vue-tsc --noEmit --skipLibCheck && vite build",
@@ -12,9 +13,7 @@
     "@arco-themes/vue-yuka-liveset": "^0.0.2",
     "@types/lodash": "^4.14.191",
     "lodash": "^4.17.21",
-    "socket.io-client": "^4.5.4",
     "vue": "^3.2.41",
-    "vue-3-socket.io": "^1.0.5",
     "vue-router": "^4.1.5"
   },
   "devDependencies": {

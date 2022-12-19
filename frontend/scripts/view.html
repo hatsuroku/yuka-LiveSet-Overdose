@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            html, body {
+                margin: 0;
+            }
+            html {
+                height: 100%;
+            }
+            body {
+                min-height: 100%;
+            }
+            #app {
+                margin: 50px 100px;
+                height: 100px;
+                width: 100px;
+                background-color: pink;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+            
+            .text.scroll {
+                display: inline-block;
+                animation: 5s wordsLoop linear infinite;
+            }
+
+            @keyframes wordsLoop {
+                0% {
+                    transform: translateX(100%);
+                }
+                100% {
+                    transform: translateX(-100%);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <div id="txt" class="text scroll">
+                啊你是一个一个一个傻逼
+            </div>
+        </div>
+    </body>
+    <script>
+        const ws = new WebSocket('ws://localhost:3000?wstype=bulletin');
+        ws.addEventListener('open', (event) => {
+            ws.send('hello i\'m bulletin');
+        });
+        ws.addEventListener('message', async (event) => {
+            console.log(`received ${JSON.stringify(event, null, 4)}`);
+            // ws.send(`client received ${event.data}`);
+            const text = await event.data.text();
+            console.log(`get [${text}]`);
+            const txt = document.getElementById('txt');
+            txt.innerText = text;
+        });
+    </script>
+</html>
