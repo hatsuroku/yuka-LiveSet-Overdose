@@ -22,7 +22,9 @@ const animateText = () => {
         // console.log(text.value);
 
         // Unity 内置浏览器太老，连 ?. 操作符都不支持，我吐了
-        // 顺带一提 Element.getAnimations() 也是不支持的，在那里面 Element.getAnimations === undefined
+        // 顺带一提 Element.getAnimations() 也是不支持的
+        // 在那里面 Element.getAnimations === undefined
+        // 怀疑是 ES2015 以及之后的特性都不支持
         if (textAnimation.value) {
             textAnimation.value.cancel();
         }
@@ -47,6 +49,8 @@ const animateText = () => {
 };
 
 onMounted(() => {
+    // vue 无法 watch 原生事件，只能 watch vue 本身的数据
+    // 所以利用原生的 ResizeObserver 监听大小变化事件
     const resizeObserver = new ResizeObserver(_.debounce((entries) => {
         animateText();
     }, 500));

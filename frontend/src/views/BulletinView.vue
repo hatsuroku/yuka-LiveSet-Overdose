@@ -21,23 +21,22 @@ const getParagraphs = computed(() => txt.value.split('\n'));
 
 let ws: WebSocket;
 
-let i = 3;
-
 onMounted(() => {
     ws = new WebSocket('ws://localhost:3000?wstype=bulletin');
     ws.addEventListener('message', (event) => {
+        // event.data 是一个 Blob，需要转成 string
         // 这傻逼 Unity 内置浏览器似乎不支持 Promise 和 async/await，操了
         // 没法用 await event.data.text()，只能想办法换点别的解决方法了
         console.log(`received ${JSON.stringify(event, null, 4)}`);
+        // 可以用 FileReader 进行同步的转换
         let reader = new FileReader();
         reader.onload = (event) => {
-            //读取之后进行操作的代码区域，event.currentTarget.result 指读取到的内容
+            // 读取之后进行操作的代码区域
+            // reader.result 指读取到的内容
             console.log(reader.result);
             txt.value = reader.result as string;
         }
         reader.readAsText(event.data);
-        // txt.value = `${i++}`;
-        // ws.send(txt.value);
     })
 })
 

@@ -6,7 +6,7 @@ import bulletinAddListener from './handlers/bulletinHandler';
 import bulletinEditorAddListener from './handlers/bulletinEditorHandler';
 
 export default class MyWSServer extends WebSocketServer  {
-    [x: string]: any;
+    VALID_WSTYPE: string[] | undefined;
     constructor(server: httpServer | httpsServer) {
         super({ server });
         this.init();
@@ -41,7 +41,7 @@ export default class MyWSServer extends WebSocketServer  {
         c(clientUrl);
 
         const wstype = clientUrl.searchParams.get('wstype');
-        if (!wstype || this.VALID_WSTYPE.indexOf(wstype) === -1) {
+        if (!wstype || this.VALID_WSTYPE!.indexOf(wstype) === -1) {
             e(`[MyWSServer connectionHandler] wstype is [${wstype}], invalid!`);
             return;
         }
