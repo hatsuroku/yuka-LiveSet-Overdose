@@ -1,34 +1,29 @@
-const path = require('path')
-const fs = require('fs')
-const random = require('../src/utils/randomUtils')
+import WebSocket, { WebSocketServer } from 'ws';
 
-const imgPath = path.resolve(__dirname, '..', 'static', 'img')
-const c = console.log.bind(globalThis)
+process.on('uncaughtException', function (err) {
+  console.log(err);
+}); 
 
-class ImgPicker {
-    imgList = []
+const wss = new WebSocketServer({ port: 80 });
 
-    constructor() {
-        this.imgList = fs.readdirSync(imgPath)
-    }
+console.log(wss.address());
 
-    get() {
-        const idx = random.getRandomInt(this.imgList.length)
-        const ret = this.imgList[idx]
-        // never empty
-        if (this.imgList.length > 1) {
-            this.imgList.splice(idx, 1)
-        }
-        return ret
-    }
+wss.on('connection', function connection(ws, req) {
+  console.log(new URL(req.url, `http://${req.headers.host}`));
+  console.log(req.url, req.headers.host);
+  
+  ws.on('message', function message(data) {
+    console.log('received: %s', data);
+  });
+  ws.on('close', function close(data) {
+    console.log('a client closed. : %s', data);
+  })
+  console.log(`client's number: ${wss.clients.size}`);
 
-    getImgUrlList() {
-        return this.imgList.map(x => x)
-    }
+  ws.send('hello from server');
+});
 
-    add(imgUrl) {
-        this.imgList.push(imgUrl)
-    }
-}
+wss.on('close', () => {
+  console.log('close');
+})
 
-const picker = new ImgPicker()
