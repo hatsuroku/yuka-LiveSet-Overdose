@@ -5,8 +5,9 @@
     <div class="lyric-container">
         <div v-for="(lyric, index) in segments" :key="index" 
             class="lyric" :class="lyricClass(index)"
+            :style="segmentStyles[index]"
             :ref="(el) => {
-                segmentRefs[index] = el;
+                segmentRefs[index].value = el;
             }"
         >
             {{ lyric }}
@@ -15,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, reactive, watch, Ref, CSSProperties } from 'vue';
 
 const lyricsText = '大げさな街の明かりが\n' +
                     '生き急ぐ夜を浮かべる\n' +
@@ -40,7 +41,8 @@ const lyricOffset = {
 const currentIdx = ref(0);
 const lyricRef = ref(lyricsText);
 const segments = computed(() => lyricRef.value.split('\n'));
-const segmentRefs = computed(() => new Array(segments.value.length).fill(ref()));
+const segmentRefs = ref(new Array(segments.value.length).fill(undefined).map(() => ref()));
+const segmentStyles: Ref<CSSProperties[]> = ref(new Array(segments.value.length).fill(undefined).map(() => reactive({})));
 const lyricMargin = {
     firstTop: 140,
     top: 50,
@@ -63,42 +65,54 @@ function lyricClass(index) {
 }
 
 
+// 定下一个元素为基准元素，定好其距离屏幕顶部的位置
+// 然后计算基准元素以上和以下的元素的位置
+// 当歌词在第 0 句时，基准元素是第 0 局
+// 其他情况下基准元素都是 current.value - 1 句
 function scrollLyric() {
-    let { start, base, end } = lyricOffset;
+    let { start, base, end } = lyricOffset;    
+
+    // 在视野外，不需要计算高度
     if (currentIdx.value + start - 1 >= 0) {
-        segmentRefs.value[currentIdx.value + start - 1].setAttribute('style', '');
+        delete segmentStyles.value[currentIdx.value + start - 1].top;
     }
-    if (currentIdx.value + end < segmentRefs.value.length) {
-        segmentRefs.value[currentIdx.value + end].setAttribute('style', '');
+    if (currentIdx.value + end < segmentStyles.value.length) {
+        delete segmentStyles.value[currentIdx.value + end].top;
     }
     
     if (currentIdx.value == 0) {
         base = 0;
-        segmentRefs.value[currentIdx.value].setAttribute('style', `top: ${lyricMargin.firstTop}px`);
+        segmentStyles.value[currentIdx.value].top = `${lyricMargin.firstTop}px`;
     } else {
-        segmentRefs.value[currentIdx.value + base].setAttribute('style', `top: ${lyricMargin.top}px`);
+        segmentStyles.value[currentIdx.value + base].top = `${lyricMargin.top}px`;
     }
     
-
     const pxStrToNumber = (pxStr: string): number => {
-        return parseInt(pxStr.slice(5, -2));
+        return parseInt(pxStr.slice(0, -2));
     }
     
+    // 计算基准元素上方元素的高度
     for (let i = currentIdx.value + base - 1; i >= 0 && i >= currentIdx.value + start; --i) {
-        const nextTop = pxStrToNumber(segmentRefs.value[i + 1].getAttribute('style'));
-        segmentRefs.value[i].setAttribute('style', `top: ${nextTop - lyricMargin.bottom - segmentRefs.value[i].clientHeight}px`);
-        // console.log(i, segmentRefs.value[i].getAttribute('style'));
+        const nextTop = pxStrToNumber(segmentStyles.value[i + 1].top as string);
+        segmentStyles.value[i].top = `${nextTop - lyricMargin.bottom - segmentRefs.value[i].value.clientHeight}px`;
     }
 
-    for (let i = currentIdx.value + base + 1; i < segmentRefs.value.length && i < currentIdx.value + end; ++i) {
-        const prevTop = pxStrToNumber(segmentRefs.value[i - 1].getAttribute('style'));
-        // console.log(i, prevTop, lyricMargin.bottom, segmentRefs.value[i - 1].clientHeight);
-        segmentRefs.value[i].setAttribute('style', `top: ${prevTop + lyricMargin.bottom + segmentRefs.value[i - 1].clientHeight}px`);
-        // console.log(i, segmentRefs.value[i].getAttribute('style'));
+    // 计算基准元素下方元素的高度
+    for (let i = currentIdx.value + base + 1; i < segmentStyles.value.length && i < currentIdx.value + end; ++i) {
+        const prevTop = pxStrToNumber(segmentStyles.value[i - 1].top as string);
+        segmentStyles.value[i].top = `${prevTop + lyricMargin.bottom + segmentRefs.value[i - 1].value.clientHeight}px`;
     }
 }
 
 onMounted(() => {
+    watch(segments, (nowSegments) => {
+        // 如果歌词变多则需要增大 Ref 数组
+        if (segmentRefs.value.length < nowSegments.length) {
+            segmentRefs.value = new Array(nowSegments.length).fill(undefined).map(() => ref());
+        }
+        segmentStyles.value = new Array(nowSegments.length).fill(undefined).map(() => reactive({}));
+    });
+
     scrollLyric();
     setInterval(() => {
         currentIdx.value = (currentIdx.value + 1) % segments.value.length;
