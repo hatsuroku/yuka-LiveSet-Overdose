@@ -1,5 +1,6 @@
 :root {
     box-sizing: border-box;
+    --quick-easing: cubic-bezier(.39,.01,.16,1);
 }
   
 *,

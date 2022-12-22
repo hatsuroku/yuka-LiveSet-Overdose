@@ -1,7 +1,7 @@
 <template>
     <div class="bulletin-container">
         <div class="bulletin-text">
-            <template v-for="(t, index) in getParagraphs" :key="index">
+            <template v-for="(t, index) in paragraphs" :key="index">
                 <w-marquee>{{t}}&nbsp;</w-marquee>
             </template>
         </div>
@@ -16,8 +16,7 @@ import { computed, ref, onMounted, onUnmounted } from 'vue';
 import WMarquee from '@/components/widgets/WMarquee.vue';
 
 const txt = ref('');
-
-const getParagraphs = computed(() => txt.value.split('\n'));
+const paragraphs = computed(() => txt.value.split('\n'));
 
 let ws: WebSocket;
 
