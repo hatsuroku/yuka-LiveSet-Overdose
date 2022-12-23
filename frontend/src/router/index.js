@@ -3,6 +3,8 @@ import HomeView from '@/views/HomeView.vue'
 import AlbumView from '@/views/AlbumView.vue'
 import UploadImg from '@/components/HomeView/UploadImg.vue'
 import BulletinView from '@/views/BulletinView.vue'
+import FuckVue from '@/views/FuckVue.vue'
+import LyricControl from '@/views/LyricControl.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,9 +30,14 @@ const router = createRouter({
       component: BulletinView,
     },
     {
+      path: '/fuck',
+      name: 'fuck',
+      component: FuckVue,
+    },
+    {
       path: '/lyric',
       name: 'lyric',
-      component: () => import('../views/LyricView.vue'),
+      component: LyricControl,
     },
     {
       path: '/bulletin',

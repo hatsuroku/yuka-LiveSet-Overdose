@@ -3,46 +3,43 @@
         <div class="bg"></div>
     </div>
     <div class="lyric-container">
-        <div v-for="(lyric, index) in segments" :key="index" 
+        <div v-for="(lyric, index) in props.lyrics" :key="index" 
             class="lyric" :class="lyricClass(index)"
-            :style="segmentStyles[index]"
+            :style="lyricStyles[index]"
             :ref="(el) => {
-                segmentRefs[index].value = el;
+                lyricRefs[index].value = el;
             }"
         >
-            {{ lyric }}
+            {{ lyric.text }}
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, reactive, watch, Ref, CSSProperties } from 'vue';
+import { ref, onMounted, reactive, watch, Ref, CSSProperties, withDefaults } from 'vue';
+import { Lyric } from '@/type/lyric';
 
-const lyricsText = '大げさな街の明かりが\n' +
-                    '生き急ぐ夜を浮かべる\n' +
-                    'さざめく雑踏の中で\n' +
-                    'ろうそくは灯る\n' +
-                    '忘れないように\n' +
-                    '忘れないように\n' +
-                    '忘れないように\n' +
-                    '生き急ぐ夜を浮かべる\n' +
-                    'さざめく雑踏の中で\n' +
-                    'ろうそくは灯る\n' +
-                    '忘れないように\n' +
-                    '忘れないように\n' +
-                    '忘れないように\n';
+interface LyricViewProps {
+    lyrics: Lyric[];
+    currentLyricIdx: number;
+}
 
+const props = withDefaults(defineProps<LyricViewProps>(), {
+    lyrics: () => [{
+        second: 0,
+        text: '...',
+    }],
+    currentLyricIdx: 0,
+});
 
 const lyricOffset = {
     start: -3,
     base: -1,
     end: 10,
 }
-const currentIdx = ref(0);
-const lyricRef = ref(lyricsText);
-const segments = computed(() => lyricRef.value.split('\n'));
-const segmentRefs = ref(new Array(segments.value.length).fill(undefined).map(() => ref()));
-const segmentStyles: Ref<CSSProperties[]> = ref(new Array(segments.value.length).fill(undefined).map(() => reactive({})));
+
+const lyricRefs = ref(new Array(props.lyrics.length).fill(undefined).map(() => ref()));
+const lyricStyles: Ref<CSSProperties[]> = ref(new Array(props.lyrics.length).fill(undefined).map(() => reactive({})));
 const lyricMargin = {
     firstTop: 140,
     top: 50,
@@ -51,15 +48,15 @@ const lyricMargin = {
 
 function lyricClass(index) {
     const base = {
-        current: index == currentIdx.value,
-        'blur-1': index == currentIdx.value - 1 || index == currentIdx.value + 1,
-        'blur-2': index == currentIdx.value - 2 || index == currentIdx.value + 2,
-        'blur-3': index <= currentIdx.value - 3 || index >= currentIdx.value + 3,
+        current: index == props.currentLyricIdx,
+        'blur-1': index == props.currentLyricIdx - 1 || index == props.currentLyricIdx + 1,
+        'blur-2': index == props.currentLyricIdx - 2 || index == props.currentLyricIdx + 2,
+        'blur-3': index <= props.currentLyricIdx - 3 || index >= props.currentLyricIdx + 3,
     }
-    if (index < currentIdx.value + lyricOffset.start || index >= currentIdx.value + lyricOffset.end) {
+    if (index < props.currentLyricIdx + lyricOffset.start || index >= props.currentLyricIdx + lyricOffset.end) {
         base['lyric-other'] = true;
     } else {
-        base[`lyric-${index - currentIdx.value}`] = true;
+        base[`lyric-${index - props.currentLyricIdx}`] = true;
     }
     return base;
 }
@@ -73,18 +70,18 @@ function scrollLyric() {
     let { start, base, end } = lyricOffset;    
 
     // 在视野外，不需要计算高度
-    if (currentIdx.value + start - 1 >= 0) {
-        delete segmentStyles.value[currentIdx.value + start - 1].top;
+    if (props.currentLyricIdx + start - 1 >= 0) {
+        delete lyricStyles.value[props.currentLyricIdx + start - 1].top;
     }
-    if (currentIdx.value + end < segmentStyles.value.length) {
-        delete segmentStyles.value[currentIdx.value + end].top;
+    if (props.currentLyricIdx + end < lyricStyles.value.length) {
+        delete lyricStyles.value[props.currentLyricIdx + end].top;
     }
     
-    if (currentIdx.value == 0) {
+    if (props.currentLyricIdx == 0) {
         base = 0;
-        segmentStyles.value[currentIdx.value].top = `${lyricMargin.firstTop}px`;
+        lyricStyles.value[props.currentLyricIdx].top = `${lyricMargin.firstTop}px`;
     } else {
-        segmentStyles.value[currentIdx.value + base].top = `${lyricMargin.top}px`;
+        lyricStyles.value[props.currentLyricIdx + base].top = `${lyricMargin.top}px`;
     }
     
     const pxStrToNumber = (pxStr: string): number => {
@@ -92,34 +89,29 @@ function scrollLyric() {
     }
     
     // 计算基准元素上方元素的高度
-    for (let i = currentIdx.value + base - 1; i >= 0 && i >= currentIdx.value + start; --i) {
-        const nextTop = pxStrToNumber(segmentStyles.value[i + 1].top as string);
-        segmentStyles.value[i].top = `${nextTop - lyricMargin.bottom - segmentRefs.value[i].value.clientHeight}px`;
+    for (let i = props.currentLyricIdx + base - 1; i >= 0 && i >= props.currentLyricIdx + start; --i) {
+        const nextTop = pxStrToNumber(lyricStyles.value[i + 1].top as string);
+        lyricStyles.value[i].top = `${nextTop - lyricMargin.bottom - lyricRefs.value[i].value.clientHeight}px`;
     }
 
     // 计算基准元素下方元素的高度
-    for (let i = currentIdx.value + base + 1; i < segmentStyles.value.length && i < currentIdx.value + end; ++i) {
-        const prevTop = pxStrToNumber(segmentStyles.value[i - 1].top as string);
-        segmentStyles.value[i].top = `${prevTop + lyricMargin.bottom + segmentRefs.value[i - 1].value.clientHeight}px`;
+    for (let i = props.currentLyricIdx + base + 1; i < lyricStyles.value.length && i < props.currentLyricIdx + end; ++i) {
+        const prevTop = pxStrToNumber(lyricStyles.value[i - 1].top as string);
+        lyricStyles.value[i].top = `${prevTop + lyricMargin.bottom + lyricRefs.value[i - 1].value.clientHeight}px`;
     }
 }
 
 onMounted(() => {
-    watch(segments, (nowSegments) => {
-        // 如果歌词变多则需要增大 Ref 数组
-        if (segmentRefs.value.length < nowSegments.length) {
-            segmentRefs.value = new Array(nowSegments.length).fill(undefined).map(() => ref());
-        }
-        segmentStyles.value = new Array(nowSegments.length).fill(undefined).map(() => reactive({}));
-    });
-
     scrollLyric();
-    setInterval(() => {
-        currentIdx.value = (currentIdx.value + 1) % segments.value.length;
-        scrollLyric();
-    }, 1000);
+    watch(() => props.lyrics, (nowLyrics) => {
+        // 如果歌词变多则需要增大 Ref 数组
+        if (lyricRefs.value.length < nowLyrics.length) {
+            lyricRefs.value = new Array(nowLyrics.length).fill(undefined).map(() => ref());
+        }
+        lyricStyles.value = new Array(nowLyrics.length).fill(undefined).map(() => reactive({}));
+    });
+    watch(() => props.currentLyricIdx, scrollLyric);
 });
-
 
 </script>
 
@@ -135,7 +127,7 @@ onMounted(() => {
     height: 100%;
     width: 100%;
     filter: brightness(0.6) blur(100px);
-    transform: scale(1.2);
+    transform: scale(1.5);
 }
 
 div {
