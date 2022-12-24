@@ -69,10 +69,13 @@ export function singleUpdateSongsInfo(filename: string) {
 
 export function getSongs() {
     return {
-        songs: Array.from(songsWithLyric).map((name) => ({
+        songsWithLyric: Array.from(songsWithLyric).map((name) => ({
             name,
             suffix: audioSuffix.get(name),
         })),
-        songsWithoutLyric: Array.from(songsWithoutLyric),
+        songsWithoutLyric: Array.from(songsWithoutLyric).map((name) => ({
+            name,
+            suffix: audioSuffix.get(name),
+        })),
     };
 }

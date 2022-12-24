@@ -1,5 +1,5 @@
 import { createUploadHanlder } from './uploadHandler';
-import { getSuffix, removeSuffix } from '@/utils/fileUtil';
+import { getSuffix, suffixToLowerCase } from '@/utils/fileUtil';
 import { audioPath, lyricPath } from '@/utils/constants';
 import { FileInfo } from 'busboy';
 import { singleUpdateSongsInfo } from '@/dataManager/song';
@@ -18,7 +18,7 @@ export const uploadSong = createUploadHanlder(
             path: getSuffix(info.filename) === 'lrc' ? 
                                                 lyricPath :
                                                 audioPath,
-            name: info.filename,
+            name: suffixToLowerCase(info.filename),
         }
     }
 );

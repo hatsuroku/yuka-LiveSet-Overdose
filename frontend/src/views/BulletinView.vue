@@ -36,7 +36,7 @@ onMounted(() => {
             txt.value = reader.result as string;
         }
         reader.readAsText(event.data);
-    })
+    });
 })
 
 onUnmounted(() => {

@@ -8,8 +8,11 @@
 *::after {
     box-sizing: inherit;
 }
-  
-  
+
+audio {
+    display: block;
+    width: 100%;
+}
 
 html {
     height: 100vh;

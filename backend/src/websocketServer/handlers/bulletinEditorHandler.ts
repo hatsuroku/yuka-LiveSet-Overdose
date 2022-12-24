@@ -10,6 +10,6 @@ export default function bulletinEditorAddListener(ws: WebSocket, wss: MyWSServer
         }
     });
     ws.on('close', (code, reason) => {
-        wss.bulletins.delete(ws);
+        wss.bulletinEditors.delete(ws);
     });
 }

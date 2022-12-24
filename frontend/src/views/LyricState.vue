@@ -1,60 +1,50 @@
 <template>
-    <LyricView :lyrics="lyrics"  />
+    <LyricView :lyrics="lyrics" :currentLyricIdx="idx" />
 </template>
 <script setup lang="ts">
 import LyricView from './LyricView.vue';
 import { splitLyric } from '@/utils/lyricUtils';
+import { wsBaseUrl } from '@/utils/netUtils';
+import { ref, computed, onMounted } from 'vue';
 
-const lrc = 
-`
-[ti: ギターと孤独と蒼い惑星]
-[ar: 結束バンド]
-[al: ギターと孤独と蒼い惑星]
-[length: 03:46.922]
-[tool: 歌词滚动姬 https://lrc-maker.github.io]
-[00:01.900] ...
-[00:15.117] 突然降る夕立 あぁ傘もないや嫌
-[00:20.975] 空のご機嫌なんか知らない
-[00:25.002] 季節の変わり目の服は 何着りゃいいんだろ
-[00:30.853] 春と秋 どこいっちゃったんだよ
-[00:34.980] 息も出来ない 情報の圧力
-[00:39.822] めまいの螺旋だ わたしはどこにいる
-[00:44.727] こんなに こんなに 息の音がするのに
-[00:50.780] 変だね 世界の音がしない
-[00:56.113] 足りない 足りない 誰にも気づかれない
-[01:00.240] 殴り書きみたいな音 出せない状態で叫んだよ
-[01:05.327] 「ありのまま」なんて 誰に見せるんだ
-[01:10.366] 馬鹿なわたしは歌うだけ
-[01:15.355] ぶちまけちゃおうか 星に
-[01:19.252] ...
-[01:29.727] エリクサーに張り替える作業もなんとなくなんだ
-[01:35.588] 欠けた爪を少し触る
-[01:39.623] 半径300mmの体で 必死に鳴いてる
-[01:45.522] 音楽にとっちゃ ココが地球だな
-[01:49.602] 空気を握って 空を殴るよ
-[01:54.447] なんにも起きない わたしは無力さ
-[01:59.297] だけどさ その手で この鉄を弾いたら
-[02:05.438] 何かが変わって見えた ような
-[02:10.768] 眩しい 眩しい そんなに光るなよ
-[02:14.897] わたしのダサい影が より色濃くなってしまうだろ
-[02:20.082] なんでこんな熱くなっちゃってんだ 止まんない
-[02:24.930] 馬鹿なわたしは歌うだけ
-[02:29.974] うるさいんだって 心臓
-[02:33.650] ...
-[02:42.523] 蒼い惑星 ひとりぼっち
-[02:47.370] いっぱいの音を聞いてきた
-[02:52.743] 回り続けて 幾億年
-[02:57.351] 一瞬でもいいから ああ
-[03:03.161] 聞いて
-[03:04.457] 聴けよ
-[03:05.468] わたし わたし わたしはここにいる
-[03:09.645] 殴り書きみたいな音 出せない状態で叫んだよ
-[03:14.781] なんかになりたい なりたい 何者かでいい
-[03:19.723] 馬鹿なわたしは歌うだけ
-[03:24.721] ぶちまけちゃおうか 星に
-`;
+const currentTime = ref(0);
+const lrc = ref('[00:00.000]...');
+const lyrics = computed(() => splitLyric(lrc.value));
+const idx = computed(() => Math.max(0, lyrics.value.findLastIndex((lyric) => lyric.second <= currentTime.value)));
 
-const lyrics = splitLyric(lrc);
+
+type MsgType = 'lyric' | 'currentTime';
+
+interface LyricViewMsg {
+    type: MsgType;
+    data: LyricData | TimeData;
+}
+
+interface TimeData {
+    currentTime: number;
+}
+
+interface LyricData {
+    name: string;
+    lrc: string;
+}
+
+let ws: WebSocket;
+
+onMounted(() => {
+    ws = new WebSocket(`${wsBaseUrl}?wstype=lyric`);
+    ws.addEventListener('message', (event) => {
+        console.log(`received ${JSON.stringify(event, null, 4)}`);
+        // console.log(JSON.stringify(JSON.parse(event.data)));
+        const msg: LyricViewMsg = JSON.parse(event.data as string);
+        if (msg.type === 'lyric') {
+            lrc.value = (msg.data as LyricData).lrc;
+            currentTime.value = 0;
+        } else {
+            currentTime.value = (msg.data as TimeData).currentTime;
+        }
+    });
+})
 
 
 </script>

@@ -18,6 +18,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import { wsBaseUrl } from '@/utils/netUtils';
 
 let bulletinText = '';
 const bulletinRef = ref(bulletinText);
@@ -30,7 +31,7 @@ function submitBulletin() {
 let ws: WebSocket;
 
 onMounted(() => {
-    ws = new WebSocket('ws://localhost:3000?wstype=bulletin-editor');
+    ws = new WebSocket(`${wsBaseUrl}?wstype=bulletin-editor`);
 })
 
 onUnmounted(() => {

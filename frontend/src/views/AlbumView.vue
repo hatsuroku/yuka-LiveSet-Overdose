@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted, Ref, StyleValue } from 'vue'
 import { getRandomIntRange, getRandomElement } from '../utils/randomUtils'
-import { baseUrl, getFilenameFromUrl } from '../utils/netUtils'
+import { httpBaseUrl, getFilenameFromUrl } from '../utils/netUtils'
 
 type Direction = 'top' | 'bottom' | 'left' | 'right'
 const classObj: Ref<string[][]> = ref([
@@ -58,14 +58,14 @@ function switchAlbum(newAlbum, fromDirection: Direction) {
 }
 
 async function fetchImgUrl() {
-    const res = await fetch(`${baseUrl}/pickImg`, {
+    const res = await fetch(`${httpBaseUrl}/pickImg`, {
         method: 'GET',
         mode: 'cors',
     });
     if (res.ok) {
         const path = await res.text()
-        console.log(`[fetchImgUrl]: fetched [${baseUrl}${path}]`);
-        return `${baseUrl}${path}`;
+        console.log(`[fetchImgUrl]: fetched [${httpBaseUrl}${path}]`);
+        return `${httpBaseUrl}${path}`;
     }
     return undefined;
 }
@@ -73,7 +73,7 @@ async function fetchImgUrl() {
 async function postImgUrl(imgFilename: string) {
     const body = new URLSearchParams();
     body.append('filename', imgFilename)
-    fetch(`${baseUrl}/collectImg`, {
+    fetch(`${httpBaseUrl}/collectImg`, {
         method: 'POST',
         mode: 'cors',
         body,

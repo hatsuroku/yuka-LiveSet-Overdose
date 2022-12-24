@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, watch, Ref, CSSProperties, withDefaults } from 'vue';
+import { ref, onMounted, reactive, watch, Ref, CSSProperties, withDefaults, nextTick } from 'vue';
 import { Lyric } from '@/type/lyric';
 
 interface LyricViewProps {
@@ -109,6 +109,7 @@ onMounted(() => {
             lyricRefs.value = new Array(nowLyrics.length).fill(undefined).map(() => ref());
         }
         lyricStyles.value = new Array(nowLyrics.length).fill(undefined).map(() => reactive({}));
+        nextTick(() => scrollLyric());
     });
     watch(() => props.currentLyricIdx, scrollLyric);
 });
