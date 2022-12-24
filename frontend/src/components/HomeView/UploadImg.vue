@@ -29,7 +29,7 @@ const uploadRef = ref();
 
 const fileList: FileItem[] = reactive([]);
 
-const submit= (e) => {
+const submit = (e) => {
     e.stopPropagation();
     uploadRef.value.submit();
 }

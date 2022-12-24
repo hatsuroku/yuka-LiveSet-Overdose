@@ -10,9 +10,10 @@ import MyWSServer from '@/websocketServer/MyWSServer';
 const app = express();
 const server = http.createServer(app);
 const corsOptions = {
-  origin: [
-    'http://localhost:5173'
-  ],
+  // origin: [
+  //   'http://localhost:5173'
+  // ],
+  origin: true,
   optionsSuccessStatus: 200,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   // allowedHeaders: ['Content-Type', 'Authorization'],

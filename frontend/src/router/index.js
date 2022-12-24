@@ -4,7 +4,7 @@ import AlbumView from '@/views/AlbumView.vue'
 import UploadImg from '@/components/HomeView/UploadImg.vue'
 import BulletinView from '@/views/BulletinView.vue'
 import FuckVue from '@/views/FuckVue.vue'
-import LyricControl from '@/views/LyricControl.vue'
+import LyricState from '@/views/LyricState.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,7 +37,7 @@ const router = createRouter({
     {
       path: '/lyric',
       name: 'lyric',
-      component: LyricControl,
+      component: LyricState,
     },
     {
       path: '/bulletin',
