@@ -43,7 +43,7 @@ const lyricStyles: Ref<CSSProperties[]> = ref(new Array(props.lyrics.length).fil
 const lyricMargin = {
     firstTop: 140,
     top: 50,
-    bottom: 25,
+    bottom: 50,
 };
 
 function lyricClass(index) {
@@ -77,9 +77,9 @@ function scrollLyric() {
         delete lyricStyles.value[props.currentLyricIdx + end].top;
     }
     
-    if (props.currentLyricIdx == 0) {
+    if (props.currentLyricIdx === 0) {
         base = 0;
-        lyricStyles.value[props.currentLyricIdx].top = `${lyricMargin.firstTop}px`;
+        lyricStyles.value[0].top = `${lyricMargin.firstTop}px`;
     } else {
         lyricStyles.value[props.currentLyricIdx + base].top = `${lyricMargin.top}px`;
     }
