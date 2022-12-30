@@ -106,6 +106,9 @@ onMounted(() => {
     ws = new WebSocket(`${wsBaseUrl}?wstype=song-player`);
 
     setInterval(() => {
+        if (ws.readyState !== WebSocket.OPEN || au.value.paused) {
+            return;
+        }
         const msg: PlayerMsg = {
             type: 'currentTime',
             data: {
