@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, watch, Ref, CSSProperties, withDefaults, nextTick } from 'vue';
+import { ref, onMounted, reactive, watch, CSSProperties, withDefaults, nextTick } from 'vue';
 import { Lyric } from '@/type/lyric';
 
 interface LyricViewProps {
@@ -35,11 +35,11 @@ const props = withDefaults(defineProps<LyricViewProps>(), {
 const lyricOffset = {
     start: -3,
     base: -1,
-    end: 10,
+    end: 8,
 }
 
-const lyricRefs = ref(new Array(props.lyrics.length).fill(undefined).map(() => ref()));
-const lyricStyles: Ref<CSSProperties[]> = ref(new Array(props.lyrics.length).fill(undefined).map(() => reactive({})));
+let lyricRefs = reactive(new Array(props.lyrics.length).fill(undefined).map(() => ref()));
+let lyricStyles: CSSProperties[] = reactive(new Array(props.lyrics.length).fill(undefined).map(() => ({})));
 const lyricMargin = {
     firstTop: 140,
     top: 50,
@@ -63,7 +63,7 @@ function lyricClass(index) {
 
 
 // 定下一个元素为基准元素，定好其距离屏幕顶部的位置
-// 然后计算基准元素以上和以下的元素的位置
+// 然后计算基准元素以上和以下的元素的位置.*from (.*)
 // 当歌词在第 0 句时，基准元素是第 0 局
 // 其他情况下基准元素都是 current.value - 1 句
 function scrollLyric() {
@@ -71,17 +71,17 @@ function scrollLyric() {
 
     // 在视野外，不需要计算高度
     if (props.currentLyricIdx + start - 1 >= 0) {
-        delete lyricStyles.value[props.currentLyricIdx + start - 1].top;
+        delete lyricStyles[props.currentLyricIdx + start - 1].top;
     }
-    if (props.currentLyricIdx + end < lyricStyles.value.length) {
-        delete lyricStyles.value[props.currentLyricIdx + end].top;
+    if (props.currentLyricIdx + end < lyricStyles.length) {
+        delete lyricStyles[props.currentLyricIdx + end].top;
     }
     
     if (props.currentLyricIdx === 0) {
         base = 0;
-        lyricStyles.value[0].top = `${lyricMargin.firstTop}px`;
+        lyricStyles[0].top = `${lyricMargin.firstTop}px`;
     } else {
-        lyricStyles.value[props.currentLyricIdx + base].top = `${lyricMargin.top}px`;
+        lyricStyles[props.currentLyricIdx + base].top = `${lyricMargin.top}px`;
     }
     
     const pxStrToNumber = (pxStr: string): number => {
@@ -90,14 +90,14 @@ function scrollLyric() {
     
     // 计算基准元素上方元素的高度
     for (let i = props.currentLyricIdx + base - 1; i >= 0 && i >= props.currentLyricIdx + start; --i) {
-        const nextTop = pxStrToNumber(lyricStyles.value[i + 1].top as string);
-        lyricStyles.value[i].top = `${nextTop - lyricMargin.bottom - lyricRefs.value[i].value.clientHeight}px`;
+        const nextTop = pxStrToNumber(lyricStyles[i + 1].top as string);
+        lyricStyles[i].top = `${nextTop - lyricMargin.bottom - lyricRefs[i].value.clientHeight}px`;
     }
 
     // 计算基准元素下方元素的高度
-    for (let i = props.currentLyricIdx + base + 1; i < lyricStyles.value.length && i < props.currentLyricIdx + end; ++i) {
-        const prevTop = pxStrToNumber(lyricStyles.value[i - 1].top as string);
-        lyricStyles.value[i].top = `${prevTop + lyricMargin.bottom + lyricRefs.value[i - 1].value.clientHeight}px`;
+    for (let i = props.currentLyricIdx + base + 1; i < lyricStyles.length && i < props.currentLyricIdx + end; ++i) {
+        const prevTop = pxStrToNumber(lyricStyles[i - 1].top as string);
+        lyricStyles[i].top = `${prevTop + lyricMargin.bottom + lyricRefs[i - 1].value.clientHeight}px`;
     }
 }
 
@@ -105,10 +105,10 @@ onMounted(() => {
     scrollLyric();
     watch(() => props.lyrics, (nowLyrics) => {
         // 如果歌词变多则需要增大 Ref 数组
-        if (lyricRefs.value.length < nowLyrics.length) {
-            lyricRefs.value = new Array(nowLyrics.length).fill(undefined).map(() => ref());
+        if (lyricRefs.length < nowLyrics.length) {
+            lyricRefs = reactive(new Array(nowLyrics.length).fill(undefined).map(() => ref()));
         }
-        lyricStyles.value = new Array(nowLyrics.length).fill(undefined).map(() => reactive({}));
+        lyricStyles = reactive(new Array(nowLyrics.length).fill(undefined).map(() => ({})));
         nextTick(() => scrollLyric());
     });
     watch(() => props.currentLyricIdx, scrollLyric);
@@ -152,7 +152,7 @@ $lyric-bottom-margin: 25px;
 }
 
 $animation-delay: 0.03s;
-@for $i from -3 to 10 {
+@for $i from -3 to 8 {
     .lyric-#{$i} {
         transition: top 1s var(--quick-easing) $animation-delay * $i,
                 filter 1s var(--quick-easing) $animation-delay * $i, 

@@ -1,10 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
-import AlbumView from '@/views/AlbumView.vue'
-import UploadImg from '@/components/HomeView/UploadImg.vue'
-import BulletinView from '@/views/BulletinView.vue'
-import FuckVue from '@/views/FuckVue.vue'
-import LyricState from '@/views/LyricState.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,32 +6,32 @@ const router = createRouter({
     {
       path: '/',
       name: 'root',
-      component: HomeView,
+      component: () => import('@/views/HomeView.vue'),
     },
     {
       path: '/album',
       name: 'album',
-      component: AlbumView,
+      component: () => import('@/views/AlbumView.vue'),
     },
     {
       path: '/uploadImg',
       name: 'uploadImg',
-      component: UploadImg,
+      component: () => import('@/components/HomeView/UploadImg.vue'),
     },
     {
       path: '/bulletin',
       name: 'bulletin',
-      component: BulletinView,
+      component: () => import('@/views/BulletinView.vue'),
     },
     {
       path: '/fuck',
       name: 'fuck',
-      component: FuckVue,
+      component: () => import('@/views/FuckVue.vue'),
     },
     {
       path: '/lyric',
       name: 'lyric',
-      component: LyricState,
+      component: () => import('@/views/LyricState.vue'),
     },
     {
       path: '/bulletin',
