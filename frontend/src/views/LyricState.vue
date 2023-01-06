@@ -12,7 +12,7 @@ const lrc = ref('[00:00.000]...');
 const lyrics = computed(() => splitLyric(lrc.value));
 const revisedLyrics = computed(() => lyrics.value.map(o => {
     const ret = Object.assign({}, o);
-    ret.second = Math.max(0, o.second - 1);
+    ret.second = Math.max(0, o.second - 0.5);
     return ret;
 }));
 const idx = computed(() => {

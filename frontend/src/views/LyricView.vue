@@ -152,11 +152,12 @@ $lyric-bottom-margin: 25px;
 }
 
 $animation-delay: 0.03s;
+$animation-second: 1s;
 @for $i from -3 to 8 {
     .lyric-#{$i} {
-        transition: top 1s var(--quick-easing) $animation-delay * $i,
-                filter 1s var(--quick-easing) $animation-delay * $i, 
-                color 1s var(--quick-easing) $animation-delay * $i;
+        transition: top $animation-second var(--quick-easing) $animation-delay * $i,
+                filter $animation-second var(--quick-easing) $animation-delay * $i, 
+                color $animation-second var(--quick-easing) $animation-delay * $i;
     }
 }
 
