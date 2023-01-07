@@ -4,7 +4,9 @@
     </a-layout-header>
     <a-layout-content class="content">
         <bulletin class="comp"></bulletin>
+        <song-player class="comp"></song-player>
         <upload-img class="comp"></upload-img>
+        <upload-song class="comp"></upload-song>
     </a-layout-content>
     <a-layout-footer class="flex_center">
         <FooterBar />
@@ -14,6 +16,8 @@
 <script setup>
 import FooterBar from '@/components/HomeView/FooterBar.vue';
 import UploadImg from '@/components/HomeView/UploadImg.vue';
+import UploadSong from '@/components/HomeView/UploadSong.vue';
+import SongPlayer from '@/components/HomeView/SongPlayer.vue';
 import Bulletin from '@/components/HomeView/BulletinEditor.vue';
 </script>
 

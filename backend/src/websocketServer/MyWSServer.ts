@@ -4,6 +4,8 @@ import { Server as httpsServer } from 'https';
 import { c, e } from '@/utils/logUtil';
 import bulletinAddListener from './handlers/bulletinHandler';
 import bulletinEditorAddListener from './handlers/bulletinEditorHandler';
+import LyricAddListener from './handlers/lyricHandler';
+import songPlayerAddListener from './handlers/songPlayerHandler';
 
 export default class MyWSServer extends WebSocketServer  {
     VALID_WSTYPE: string[] | undefined;
@@ -14,6 +16,8 @@ export default class MyWSServer extends WebSocketServer  {
 
     bulletins: Set<WebSocket> = new Set();
     bulletinEditors: Set<WebSocket> = new Set();
+    songPlayers: Set<WebSocket> = new Set();
+    lyrics: Set<WebSocket> = new Set();
 
     init() {
         this.on('listening', () => {
@@ -28,6 +32,8 @@ export default class MyWSServer extends WebSocketServer  {
             value: [
                 'bulletin',
                 'bulletin-editor',
+                'song-player',
+                'lyric',
             ]
         })
     }
@@ -57,14 +63,34 @@ export default class MyWSServer extends WebSocketServer  {
                 bulletinEditorAddListener(ws, this);
                 break;
             }
+            case 'song-player': {
+                this.songPlayers.add(ws);
+                songPlayerAddListener(ws, this);
+                break;
+            }
+            case 'lyric': {
+                this.lyrics.add(ws);
+                LyricAddListener(ws, this);
+                break;
+            }
         }
         console.log(`current conn: ${this.clients.size }`);
-        console.log(`current total size: ${this.bulletinEditors.size + this.bulletins.size}`);
+        console.log('current size: {\n' +
+                    `    bulletinEditors: ${this.bulletinEditors.size},\n` +
+                    `    bulletins: ${this.bulletins.size},\n` +
+                    `    songPlayers: ${this.songPlayers.size},\n` +
+                    `    lyrics: ${this.lyrics.size},\n` +
+                    '}\n');
 
         ws.on('close', (code, reason) => {
-            console.log(`[${ws.url}] disconnected.`);
+            console.log(`A client disconnected.`);
             console.log(`current conn: ${this.clients.size }`);
-            console.log(`current total size: ${this.bulletinEditors.size + this.bulletins.size}`);    
+            console.log('current size: {\n' +
+                `    bulletinEditors: ${this.bulletinEditors.size},\n` +
+                `    bulletins: ${this.bulletins.size},\n` +
+                `    songPlayers: ${this.songPlayers.size},\n` +
+                `    lyrics: ${this.lyrics.size},\n` +
+                '}\n');
         })
     }
 

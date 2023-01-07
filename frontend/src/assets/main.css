@@ -1,5 +1,6 @@
 :root {
     box-sizing: border-box;
+    --quick-easing: cubic-bezier(.39,.01,.16,1);
 }
   
 *,
@@ -7,8 +8,11 @@
 *::after {
     box-sizing: inherit;
 }
-  
-  
+
+audio {
+    display: block;
+    width: 100%;
+}
 
 html {
     height: 100vh;
