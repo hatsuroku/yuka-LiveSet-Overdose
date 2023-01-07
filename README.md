@@ -6,39 +6,40 @@
 
 ## 前端
 
-安装依赖
 ```bash
+# 进入前端文件夹
+cd frontend
+# 安装依赖
 npm install
-```
-
-运行
-```bash
+# 运行
 npm run dev
-```
-
-构建
-```bash
-npm run build
 ```
 
 ## 后端
 
-安装依赖
+打开终端
 ```bash
+# 进入后端文件夹
+cd backend
+# 安装依赖
 npm install
-```
-
-实时生成 js 代码
-```bash
+# 实时生成 js 代码
 npm run watch
 ```
 
-生成 js 代码
+打开第二个终端
 ```bash
-npm run build
-```
-
-在**运行**和**构建**后运行
-```bash
+# 进入后端文件夹
+cd backend
+# 生成 js 代码后运行后端服务
 node ./dist/index.js
 ```
+
+
+## 前端路由对应页面
+
+| 页面   | 路由        |
+|------|-----------|
+| 专辑封面 | /album    |
+| 公告   | /bulletin |
+| 歌词   | /lyric    |
