@@ -14,21 +14,6 @@ const router = createRouter({
       component: () => import('@/views/AlbumView.vue'),
     },
     {
-      path: '/uploadImg',
-      name: 'uploadImg',
-      component: () => import('@/components/HomeView/UploadImg.vue'),
-    },
-    {
-      path: '/bulletin',
-      name: 'bulletin',
-      component: () => import('@/views/BulletinView.vue'),
-    },
-    {
-      path: '/fuck',
-      name: 'fuck',
-      component: () => import('@/views/FuckVue.vue'),
-    },
-    {
       path: '/lyric',
       name: 'lyric',
       component: () => import('@/views/LyricState.vue'),
@@ -37,6 +22,16 @@ const router = createRouter({
       path: '/bulletin',
       name: 'bulletin',
       component: () => import('../views/BulletinView.vue'),
+    },
+    {
+      path: '/uploadImg',
+      name: 'uploadImg',
+      component: () => import('@/components/HomeView/UploadImg.vue'),
+    },
+    {
+      path: '/fuck',
+      name: 'fuck',
+      component: () => import('@/views/FuckVue.vue'),
     },
   ],
 })
