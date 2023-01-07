@@ -1,6 +1,6 @@
 <template>
     <div class="bg-frame">
-        <div class="bg"></div>
+        <div class="bg" :style="{'background-image': props.bgSrc}"></div>
     </div>
     <div class="lyric-container">
         <div v-for="(lyric, index) in props.lyrics" :key="index" 
@@ -22,6 +22,7 @@ import { Lyric } from '@/type/lyric';
 interface LyricViewProps {
     lyrics: Lyric[];
     currentLyricIdx: number;
+    bgSrc: string;
 }
 
 const props = withDefaults(defineProps<LyricViewProps>(), {
@@ -30,6 +31,7 @@ const props = withDefaults(defineProps<LyricViewProps>(), {
         text: '...',
     }],
     currentLyricIdx: 0,
+    bgSrc: 'url("/yuka.png")',
 });
 
 const lyricOffset = {
@@ -45,7 +47,6 @@ const lyricMargin = {
     top: 50,
     bottom: 50,
 };
-
 function lyricClass(index) {
     const base = {
         current: index == props.currentLyricIdx,
@@ -124,7 +125,8 @@ onMounted(() => {
 }
 
 .bg {
-    background-image: url("/yuka.png");
+    background-size: cover;
+    background-position: center;
     height: 100%;
     width: 100%;
     filter: brightness(0.6) blur(100px);
@@ -135,7 +137,7 @@ div {
     color: white;
     font-size: 50px;
     line-height: 1.3;
-    font-family: 'Noto Sans', 'Noto Sans', 'Source Han Sans', 'Source Han Sans CN', '思源黑体';
+    font-family: 'Noto Sans', 'Noto Sans', 'Source Han Sans', 'Source Han Sans CN', '思源黑体', sans-serif;
     font-weight: bolder;
 }
 

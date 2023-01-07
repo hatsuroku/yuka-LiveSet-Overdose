@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted, Ref, StyleValue } from 'vue'
-import { getRandomIntRange, getRandomElement } from '../utils/randomUtils'
-import { httpBaseUrl, getFilenameFromUrl } from '../utils/netUtils'
+import { getRandomIntRange, getRandomElement } from '@/utils/randomUtils'
+import { httpBaseUrl, getFilenameFromUrl, fetchImgUrl, returnImgUrl } from '@/utils/netUtils'
 
 type Direction = 'top' | 'bottom' | 'left' | 'right'
 const classObj: Ref<string[][]> = ref([
@@ -15,10 +15,10 @@ const styleObj: Ref<StyleValue[]> = ref([
 ])
 
 const switchTime = {
-    lo: 1.5,
-    hi: 3,
-    // lo: 5,
-    // hi: 60,
+    // lo: 1.5,
+    // hi: 3,
+    lo: 30,
+    hi: 60,
 }
 const dir: Direction[] = ['top', 'bottom', 'left', 'right']
 
@@ -54,47 +54,23 @@ function switchAlbum(newAlbum, fromDirection: Direction) {
         switchAlbum(await fetchImgUrl(), getRandomElement(dir))
     }, getRandomIntRange(switchTime.lo, switchTime.hi) * 1000)
 
-    postImgUrl(getFilenameFromUrl(removeUrlParenthesis(nowStyle['background-image'])))
+    returnImgUrl(getFilenameFromUrl(removeUrlParenthesis(nowStyle['background-image'])))
 }
 
-async function fetchImgUrl() {
-    const res = await fetch(`${httpBaseUrl}/pickImg`, {
-        method: 'GET',
-        mode: 'cors',
-    });
-    if (res.ok) {
-        const path = await res.text()
-        console.log(`[fetchImgUrl]: fetched [${httpBaseUrl}${path}]`);
-        return `${httpBaseUrl}${path}`;
-    }
-    return undefined;
-}
-
-async function postImgUrl(imgFilename: string) {
-    const body = new URLSearchParams();
-    body.append('filename', imgFilename)
-    fetch(`${httpBaseUrl}/collectImg`, {
-        method: 'POST',
-        mode: 'cors',
-        body,
-        keepalive: true
-    })
-}
-
-function postImgBeforeClose(event) {
-    postImgUrl(getFilenameFromUrl(removeUrlParenthesis(styleObj.value[using]['background-image'])))
+function returnImgBeforeClose(event) {
+    returnImgUrl(getFilenameFromUrl(removeUrlParenthesis(styleObj.value[using]['background-image'])))
 }
 
 // preloadImgs(imgPicker.getImgUrlList())
 onMounted(async () => {
-    window.addEventListener('unload', postImgBeforeClose)
+    window.addEventListener('unload', returnImgBeforeClose)
     styleObj.value[using]['background-image'] = `url(${await fetchImgUrl()})`
     setTimeout(async () => {
         switchAlbum(await fetchImgUrl(), getRandomElement(dir))
     }, getRandomIntRange(switchTime.lo, switchTime.hi) * 1000)
 })
 onUnmounted(() => {
-    window.addEventListener('unload', postImgBeforeClose)
+    window.addEventListener('unload', returnImgBeforeClose)
 })
 
 

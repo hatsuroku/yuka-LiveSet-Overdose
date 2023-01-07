@@ -75,12 +75,22 @@ export default class MyWSServer extends WebSocketServer  {
             }
         }
         console.log(`current conn: ${this.clients.size }`);
-        console.log(`current total size: ${this.bulletinEditors.size + this.bulletins.size}`);
+        console.log('current size: {\n' +
+                    `    bulletinEditors: ${this.bulletinEditors.size},\n` +
+                    `    bulletins: ${this.bulletins.size},\n` +
+                    `    songPlayers: ${this.songPlayers.size},\n` +
+                    `    lyrics: ${this.lyrics.size},\n` +
+                    '}\n');
 
         ws.on('close', (code, reason) => {
-            console.log(`[${ws.url}] disconnected.`);
+            console.log(`A client disconnected.`);
             console.log(`current conn: ${this.clients.size }`);
-            console.log(`current total size: ${this.bulletinEditors.size + this.bulletins.size}`);    
+            console.log('current size: {\n' +
+                `    bulletinEditors: ${this.bulletinEditors.size},\n` +
+                `    bulletins: ${this.bulletins.size},\n` +
+                `    songPlayers: ${this.songPlayers.size},\n` +
+                `    lyrics: ${this.lyrics.size},\n` +
+                '}\n');
         })
     }
 
