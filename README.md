@@ -24,7 +24,8 @@ cd frontend
 # 安装依赖
 npm install
 # 运行
-npm run dev
+npm run build
+npm run preview
 ```
 
 ## 后端
