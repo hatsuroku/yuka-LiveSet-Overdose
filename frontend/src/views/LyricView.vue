@@ -34,6 +34,10 @@ const props = withDefaults(defineProps<LyricViewProps>(), {
     bgSrc: 'url("/yuka.png")',
 });
 
+/*
+ * base 是显示在屏幕上的最顶部的元素
+ * 只有 index 落在 [start, end) 区间内的才会计算 top 
+ */
 const lyricOffset = {
     start: -3,
     base: -1,
@@ -47,19 +51,19 @@ const lyricMargin = {
     top: 50,
     bottom: 50,
 };
-function lyricClass(index) {
-    const base = {
-        current: index == props.currentLyricIdx,
-        'blur-1': index == props.currentLyricIdx - 1 || index == props.currentLyricIdx + 1,
-        'blur-2': index == props.currentLyricIdx - 2 || index == props.currentLyricIdx + 2,
+function lyricClass(index: number) {
+    const cls = {
+        current: index === props.currentLyricIdx,
+        'blur-1': index === props.currentLyricIdx - 1 || index === props.currentLyricIdx + 1,
+        'blur-2': index === props.currentLyricIdx - 2 || index === props.currentLyricIdx + 2,
         'blur-3': index <= props.currentLyricIdx - 3 || index >= props.currentLyricIdx + 3,
     }
     if (index < props.currentLyricIdx + lyricOffset.start || index >= props.currentLyricIdx + lyricOffset.end) {
-        base['lyric-other'] = true;
+        cls['lyric-other'] = true;
     } else {
-        base[`lyric-${index - props.currentLyricIdx}`] = true;
+        cls[`lyric-${index - props.currentLyricIdx}`] = true;
     }
-    return base;
+    return cls;
 }
 
 
@@ -68,15 +72,12 @@ function lyricClass(index) {
 // 当歌词在第 0 句时，基准元素是第 0 局
 // 其他情况下基准元素都是 current.value - 1 句
 function scrollLyric() {
-    let { start, base, end } = lyricOffset;    
+    lyricStyles.forEach((style) => {
+      style.top = '';
+    });
 
-    // 在视野外，不需要计算高度
-    if (props.currentLyricIdx + start - 1 >= 0) {
-        delete lyricStyles[props.currentLyricIdx + start - 1].top;
-    }
-    if (props.currentLyricIdx + end < lyricStyles.length) {
-        delete lyricStyles[props.currentLyricIdx + end].top;
-    }
+    let { base } = lyricOffset;
+    const { start, end } = lyricOffset;
     
     if (props.currentLyricIdx === 0) {
         base = 0;
@@ -88,14 +89,14 @@ function scrollLyric() {
     const pxStrToNumber = (pxStr: string): number => {
         return parseInt(pxStr.slice(0, -2));
     }
-    
-    // 计算基准元素上方元素的高度
+
+    // 因为 base 已经计算好了，所以从 base - 1 开始计算
     for (let i = props.currentLyricIdx + base - 1; i >= 0 && i >= props.currentLyricIdx + start; --i) {
         const nextTop = pxStrToNumber(lyricStyles[i + 1].top as string);
         lyricStyles[i].top = `${nextTop - lyricMargin.bottom - lyricRefs[i].value.clientHeight}px`;
     }
 
-    // 计算基准元素下方元素的高度
+    // 因为 base 已经计算好了，所以从 base + 1 开始计算
     for (let i = props.currentLyricIdx + base + 1; i < lyricStyles.length && i < props.currentLyricIdx + end; ++i) {
         const prevTop = pxStrToNumber(lyricStyles[i - 1].top as string);
         lyricStyles[i].top = `${prevTop + lyricMargin.bottom + lyricRefs[i - 1].value.clientHeight}px`;
